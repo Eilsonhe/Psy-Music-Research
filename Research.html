@@ -15,9 +15,84 @@
       text-align: center;
     }
 
-    img {
+    .content {
+      text-align: center;
+    }
+
+    .content table {
+      display: inline-block;
+    }
+
+    .cover {
       text-align: center;
       border: #666666 dotted 4px;
+      width: 250px;
+      height: 200px;
+    }
+
+    .controls {
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    .controls button {
+      width: 160px;
+      padding: 10px 25px;
+      font-size: 18px;
+      line-height: 1.3333333;
+      border-radius: 6px;
+      display: inline-block;
+      font-weight: 400;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      touch-action: manipulation;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      background: #fff none;
+      border: 1px solid #ccc;
+      color: #333;
+    }
+
+    .controls button:hover {
+      color: #333;
+      background-color: #e6e6e6;
+      border-color: #adadad;
+    }
+
+    .controls button:active {
+      color: #333;
+      background-color: #e6e6e6;
+      border-color: #adadad;
+      outline: 0;
+      -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+      box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    }
+
+    .controls button:focus {
+      color: #333;
+      background-color: #e6e6e6;
+      border-color: #8c8c8c;
+      outline: 5px auto -webkit-focus-ring-color;
+      outline-offset: -2px;
+    }
+
+    #markBtn {
+      margin-left: 20px;
+    }
+
+    #markers {
+      margin-top: 30px;
+      width: 550px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.6;
     }
 
     .linear {
@@ -35,15 +110,71 @@
 <body class="linear">
 <h1>Clair de Lune</h1>
 <h3>闭眼倾听，变化随心</h3>
-<div align="center">
-  <table width="200" border="2">
+<div class="content">
+  <table border="2">
     <tr>
-      <td><img src="Debussy.jpg" width="250" height="200"></td>
+      <td><img src="Debussy.jpg" class="cover"></td>
       <td>
-        <embed src="1.mp3" width="250" height="200"></embed>
+        <audio id="music" src="1.mp3" controls="controls"></audio>
       </td>
     </tr>
   </table>
 </div>
+<div class="controls">
+  <button type="button" id="startBtn">播放</button>
+  <button type="button" id="markBtn">打点</button>
+</div>
+<div id="markers">
+</div>
+<script type="text/javascript">
+  function fixTime(val) {
+    const multiple = 100;
+    return Math.round(val * multiple) / multiple;
+  }
+
+  window.addEventListener('load', function () {
+    var music = document.getElementById('music');
+    var startBtn = document.getElementById('startBtn');
+    var markBtn = document.getElementById('markBtn');
+    var markersElm = document.getElementById('markers');
+
+    var playing = false;
+    var markerList = [];
+
+    function showMarkers() {
+      markersElm.innerText = markerList.join(', ');
+    }
+
+    music.addEventListener('ended', function () {
+      playing = false;
+      startBtn.innerText = '播放';
+    });
+
+    startBtn.addEventListener('click', function () {
+      if (!playing) {
+        if (music.currentTime == 0) {
+          markerList = [];
+          showMarkers();
+        }
+
+        music.play();
+        playing = true;
+        startBtn.innerText = '暂停';
+      } else {
+        music.pause();
+        playing = false;
+        startBtn.innerText = '播放';
+      }
+    });
+
+    markBtn.addEventListener('click', function () {
+      var ts = fixTime(music.currentTime);
+      if (markerList.indexOf(ts) < 0) {
+        markerList.push(ts);
+        showMarkers();
+      }
+    });
+  });
+</script>
 </body>
 </html>
